@@ -20,13 +20,13 @@ echo "###########"
 echo -n password | cryptsetup luksFormat "${LOOP}p3"
 echo -n password | cryptsetup open "${LOOP}p3" luks
 pvcreate /dev/mapper/luks
-vgcreate vgonluks /dev/mapper/luks
-lvcreate vgonluks -n root -L 100M
-lvcreate vgonluks -n data -l 100%FREE
+vgcreate lvmonluks /dev/mapper/luks
+lvcreate lvmonluks -n root -L 100M
+lvcreate lvmonluks -n data -l 100%FREE
 
 mkfs.ext4 "${LOOP}p2"
-mkfs.ext4 /dev/vgonluks/root
-mkfs.ext4 /dev/vgonluks/data
+mkfs.ext4 /dev/lvmonluks/root
+mkfs.ext4 /dev/lvmonluks/data
 
 echo "###########"
 lsblk "$LOOP"

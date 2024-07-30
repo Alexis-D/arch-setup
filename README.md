@@ -26,11 +26,11 @@
   ├─loop0p2           259:3    0  128M  0 part
   └─loop0p3           259:4    0  894M  0 part
     └─luks            253:3    0  878M  0 crypt
-      ├─vgonluks-root 253:4    0  100M  0 lvm
-      └─vgonluks-data 253:5    0  776M  0 lvm
+      ├─lvmonluks-root 253:4    0  100M  0 lvm
+      └─lvmonluks-data 253:5    0  776M  0 lvm
   ```
 * First create a disk image with `qemu-img create -f qcow2 arch.qcow2 16G` then run a VM like this: `qemu-system-x86_64 -smp 3 -m 2048 -nic user,hostfwd=tcp::2222-:22,model=virtio -drive file=arch.qcow2,media=disk,if=virtio [-cdrom archlinux-2024.07.01-x86_64.iso]`. This will give the VM 3 cores, 2G of RAM, and importantly forward that guest's SSH port (22) on the host's at port 2222. `-cdrom` is only useful when installing arch and can be omitted on subsequent boots.
-* The `cryptdevice` kernel params needs to be set to the device on which the luks device is created, so in our example it would be something like `blkid /dev/loop0p3` (since we want the third partition on the loop device), not `blkid /dev/mapper/luks`. Root should be set to something like `/dev/mapper/vgonluks-root`.
+* The `cryptdevice` kernel params needs to be set to the device on which the luks device is created, so in our example it would be something like `blkid /dev/loop0p3` (since we want the third partition on the loop device), not `blkid /dev/mapper/luks`. Root should be set to something like `/dev/mapper/lvmonluks-root`.
 * Make sure to `mount` the devices (`/`, then `/boot`, then `/home`) and call `genfstab -U /,mnt >> /mnt/etc/fstab`)
 * When starting the VM, press `e` to tweak grub/kernel params. It's probably a good idea to disable `quiet`.
 * If the config is messed up, the rescue shell is useful, from there you can mount devices manually, and then `chroot` into your install. See [Using chroot](https://wiki.archlinux.org/title/Chroot#Using_chroot).
